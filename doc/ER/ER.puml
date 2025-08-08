@@ -1,0 +1,79 @@
+@startuml
+' Сущности
+entity "Мероприятия" as events {
+  * ИД
+  --
+  Наименование : Строка(25)
+  ДатаМероприятия :  (Дата)
+  + Ответственный (СправочникСсылка.Пользователи)
+  Комментарий : Строка(70)
+}
+
+entity "СтатьиПредставительскихРасходов" as expense_items {
+  * ИД
+  --
+  Наименование : Строка(50)
+  УчитыватьВНалоговомУчете : Булево
+}
+
+entity "ПредставительскиеРасходы" as expenses {
+  * ИД
+  --
+  + Организация
+  + Поставщик
+  + Мероприятие
+  ДатаМероприятия : Дата и время
+}
+
+entity "СоставРасходов" as expense_composition {
+  * ИД
+  --
+  + СтатьяРасходов
+  Сумма : Число(10,2)
+}
+
+entity "Организации" as organizations {
+  * ИД
+  --
+  ' Стандартные реквизиты
+}
+
+entity "Контрагенты" as contractors {
+  * ИД
+  --
+  ' Стандартные реквизиты
+}
+
+entity "Пользователи" as users {
+  * ИД
+  --
+  ' Стандартные реквизиты
+}
+
+entity "РегистрНакопления.РасходыПоМероприятиям" as register {
+  * ИД
+  --
+  + Организация
+  + Мероприятие
+  + Поставщик
+  + СтатьяРасходов
+  Сумма : Число(10,2)
+}
+
+' Связи
+events ||--o{ expenses : "1..*"
+expense_items ||--o{ expense_composition : "1..*"
+expenses ||--o{ expense_composition : "1..*"
+organizations ||--o{ expenses : "1..*"
+contractors ||--o{ expenses : "1..*"
+users ||--o{ events : "1..*"
+
+expenses }|..|| register : "записывает"
+expense_composition }|..|| register : "агрегирует"
+
+' Отношения для регистра
+register }|--|| organizations
+register }|--|| events
+register }|--|| contractors
+register }|--|| expense_items
+@enduml
